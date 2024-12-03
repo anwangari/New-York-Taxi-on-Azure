@@ -5,6 +5,39 @@
 			"referenceName": "AzureDataLakeStorage1",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"month": {
+				"type": "String",
+				"defaultValue": [
+					"01",
+					"02",
+					"03",
+					"04",
+					"05",
+					"06",
+					"07",
+					"08",
+					"09",
+					"10",
+					"11",
+					"12"
+				]
+			},
+			"year": {
+				"type": "String",
+				"defaultValue": [
+					"2019",
+					"2020"
+				]
+			},
+			"service": {
+				"type": "String",
+				"defaultValue": [
+					"yellow",
+					"green"
+				]
+			}
+		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
