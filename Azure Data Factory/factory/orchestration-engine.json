@@ -1,0 +1,9 @@
+{
+	"name": "orchestration-engine",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "45fcb15a-991c-482f-b710-989e1be046f8",
+		"tenantId": "0f36da17-f424-4057-afb1-13a58efcf20c"
+	}
+}
