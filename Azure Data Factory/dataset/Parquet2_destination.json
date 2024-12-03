@@ -42,11 +42,7 @@
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation",
-				"fileSystem": {
-					"value": "@{concat(pipeline().parameters.service, '_tripdata_', pipeline().parameters.year, '-', pipeline().parameters.month, '.parquet')}",
-					"type": "Expression"
-				}
+				"type": "AzureBlobFSLocation"
 			},
 			"compressionCodec": "snappy"
 		},
