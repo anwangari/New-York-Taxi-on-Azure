@@ -1,0 +1,22 @@
+{
+	"name": "Parquet2_destination",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": {
+					"value": "@{concat(pipeline().parameters.service, '_tripdata_', pipeline().parameters.year, '-', pipeline().parameters.month, '.parquet')}",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
