@@ -1,7 +1,12 @@
+from azure.storage.filedatalake import (
+    DataLakeServiceClient,
+    DataLakeDirectoryClient,
+    FileSystemClient
+)
+from azure.identity import DefaultAzureCredential
+
 from dotenv import load_dotenv
 import os
-import requests
-from azure.storage.blob import BlobServiceClient
 import requests
 
 # read environment varibles from memory
