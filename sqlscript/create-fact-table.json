@@ -1,0 +1,18 @@
+{
+	"name": "create-fact-table",
+	"properties": {
+		"description": "Create fact table by adding zones to their ids",
+		"content": {
+			"query": "USE NewYorkTaxiDB;\n\nSELECT\n    t.VendorID,\n    t.pickup_datetime,\n    t.passenger_count,\n    t.trip_distance,\n    t.RatecodeID,\n    t.store_and_fwd_flag,\n    pu.borough AS Pickup_Borough,\n    pu.zone AS Pickup_Zone,\n    do.borough AS Dropoff_Borough,\n    do.zone AS Dropoff_Zone,\n    t.payment_type,\n    t.fare_amount,\n    t.extra,\n    t.mta_tax,\n    t.tip_amount,\n    t.tolls_amount,\n    t.improvement_surcharge,\n    t.total_amount,\n    t.congestion_surcharge,\n    t.service\nFROM\n    dbo.combinedtaxitrip AS t\nLEFT JOIN dbo.zones AS pu\n    ON t.PULocationID = pu.locationid\nLEFT JOIN dbo.zones AS do\n    ON t.DOLocationID = do.locationid;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "NewYorkTaxiDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
