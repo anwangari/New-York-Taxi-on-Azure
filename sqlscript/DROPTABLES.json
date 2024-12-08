@@ -1,0 +1,17 @@
+{
+	"name": "DROPTABLES",
+	"properties": {
+		"content": {
+			"query": "USE NewYorkTaxiDB;\n\nDROP EXTERNAL TABLE dbo.taxitrip;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "NewYorkTaxiDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
