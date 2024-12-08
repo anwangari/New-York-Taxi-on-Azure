@@ -2,7 +2,7 @@
 	"name": "DROPTABLES",
 	"properties": {
 		"content": {
-			"query": "USE NewYorkTaxiDB;\n\nDROP EXTERNAL TABLE dbo.taxitrip;",
+			"query": "USE NewYorkTaxiDB;\n\nDROP EXTERNAL TABLE dbo.zones;",
 			"metadata": {
 				"language": "sql"
 			},
