@@ -1,0 +1,18 @@
+{
+	"name": "combine-green-and-yellow",
+	"properties": {
+		"description": "CETAS query to combine the data from green and yellow trips records",
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'new-york-taxi_nytaxidatastore2_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [new-york-taxi_nytaxidatastore2_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://new-york-taxi@nytaxidatastore2.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE dbo.combinedtaxitrip\n    WITH (\n        -- details for storing results\n        LOCATION = 'combined_trips_data',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = SynapseParquetFormat\n    )\nAS\nSELECT \n    VendorID,\n    pickup_datetime,\n    dropoff_datetime\n    passenger_count,\n    trip_distance,\n    RatecodeID,\n    store_and_fwd_flag,\n    PULocationID,\n    DOLocationID,\n    payment_type,\n    fare_amount,\n    extra,\n    mta_tax,\n    tip_amount,\n    tolls_amount,\n    improvement_surcharge,\n    total_amount,\n    congestion_surcharge,\n    service\nFROM (\n    SELECT \n        VendorID,\n        lpep_pickup_datetime AS pickup_datetime,\n        lpep_dropoff_datetime AS dropoff_datetime,\n        passenger_count,\n        trip_distance,\n        RatecodeID,\n        store_and_fwd_flag,\n        PULocationID,\n        DOLocationID,\n        payment_type,\n        fare_amount,\n        extra,\n        mta_tax,\n        tip_amount,\n        tolls_amount,\n        improvement_surcharge,\n        total_amount,\n        congestion_surcharge,\n        'green' AS service\n    FROM\n    OPENROWSET(\n        BULK 'https://nytaxidatastore2.dfs.core.windows.net/new-york-taxi/rides/green/*',\n        FORMAT = 'PARQUET'\n    ) AS [green_result]\n    UNION ALL\n    SELECT \n        VendorID,\n        tpep_pickup_datetime AS pickup_datetime,\n        tpep_dropoff_datetime AS dropoff_datetime,\n        passenger_count,\n        trip_distance,\n        RatecodeID,\n        store_and_fwd_flag,\n        PULocationID,\n        DOLocationID,\n        payment_type,\n        fare_amount,\n        extra,\n        mta_tax,\n        tip_amount,\n        tolls_amount,\n        improvement_surcharge,\n        total_amount,\n        congestion_surcharge,\n        'yellow' AS service\n    FROM\n    OPENROWSET(\n        BULK 'https://nytaxidatastore2.dfs.core.windows.net/new-york-taxi/rides/yellow/*',\n        FORMAT = 'PARQUET'\n    ) AS [yellow_result]\n) combined_taxi_data;\nGO\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "NewYorkTaxiDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
