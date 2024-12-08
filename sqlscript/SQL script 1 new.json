@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1 new",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n    locationid,\n    REPLACE(borough, NCHAR(0x202F), ' ') AS borough,   -- Replace U+202F with space\n    REPLACE(zone, NCHAR(0x202F), ' ') AS zone,          -- Replace U+202F with space\n    REPLACE(service_zone, NCHAR(0x202F), ' ') AS service_zone\nFROM\n    OPENROWSET(\n        BULK 'https://nytaxidatastore2.dfs.core.windows.net/new-york-taxi/rides/zone_lookups/taxi_zone_lookup.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
