@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1-WITH",
+	"properties": {
+		"content": {
+			"query": "\nSELECT\n    *\nFROM\n    OPENROWSET(\n        BULK 'https://nytaxidatastore2.dfs.core.windows.net/new-york-taxi/rides/zone_lookups/taxi_zone_lookup (2).csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE\n    )\nWITH(\n    locationid BIGINT 1,\n    borough VARCHAR(1000) 2,\n    zone VARCHAR(1000) 3,\n    service_zone VARCHAR(1000) 4\n) AS [result]\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
