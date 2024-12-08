@@ -1,0 +1,17 @@
+{
+	"name": "create_zonelookup",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseDelimitedTextFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseDelimitedTextFormat] \n\tWITH ( FORMAT_TYPE = DELIMITEDTEXT ,\n\t       FORMAT_OPTIONS (\n\t\t\t FIELD_TERMINATOR = ',',\n\t\t\t FIRST_ROW = 2,\n\t\t\t USE_TYPE_DEFAULT = TRUE\n\t\t\t))\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'new-york-taxi_nytaxidatastore2_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [new-york-taxi_nytaxidatastore2_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://new-york-taxi@nytaxidatastore2.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE dbo.taxizones (\n\t[locationid] bigint,\n\t[borough] nvarchar(4000),\n\t[zone] nvarchar(4000),\n\t[service_zone] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'rides/zone_lookups/taxi_zone_lookup.csv',\n\tDATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseDelimitedTextFormat]\n\t)\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "NewYorkTaxiDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
