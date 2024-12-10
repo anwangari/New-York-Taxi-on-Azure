@@ -1,0 +1,25 @@
+{
+	"name": "pipeline_run_Scheduler",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "nytaxi-web-to-lakehouse",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2024-12-11T00:00:00",
+				"endTime": "2024-12-21T11:24:00",
+				"timeZone": "E. Africa Standard Time"
+			}
+		}
+	}
+}
