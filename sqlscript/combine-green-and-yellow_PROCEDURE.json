@@ -1,5 +1,5 @@
 {
-	"name": "combine-green-and-yellow",
+	"name": "combine-green-and-yellow_PROCEDURE",
 	"properties": {
 		"description": "CETAS query to combine the data from green and yellow trips records",
 		"content": {
