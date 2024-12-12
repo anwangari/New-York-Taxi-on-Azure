@@ -29,7 +29,7 @@
 					{
 						"activity": "url-to-ADLS Gen2",
 						"dependencyConditions": [
-							"Succeeded"
+							"Completed"
 						]
 					}
 				],
@@ -63,9 +63,9 @@
 				"type": "Script",
 				"dependsOn": [
 					{
-						"activity": "url-to-ADLS Gen2",
+						"activity": "merge-green-and-yellow",
 						"dependencyConditions": [
-							"Succeeded"
+							"Completed"
 						]
 					}
 				],
@@ -89,6 +89,42 @@
 						{
 							"type": "Query",
 							"text": "USE NewYorkTaxiDB;\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'new-york-taxi_nytaxidatastore2_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [new-york-taxi_nytaxidatastore2_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://new-york-taxi@nytaxidatastore2.dfs.core.windows.net' \n\t)\nGO\n\nCREATE EXTERNAL TABLE dbo.zones (\n\t[locationid] bigint,\n\t[borough] nvarchar(4000),\n\t[zone] nvarchar(4000),\n\t[service_zone] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'rides/zone_lookups/taxi_zone_lookup.parquet',\n\tDATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "create_fact_table",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "create_zones_lookup_table",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "nytaxi-synapse-workspace-WorkspaceDefaultSqlServer",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "master"
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": "CREATE EXTERNAL TABLE fact_trips\nWITH (\n    LOCATION = 'fact-trips',\n    DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n)\nAS\nSELECT\n    t.VendorID,\n    t.pickup_datetime,\n    t.passenger_count,\n    t.trip_distance,\n    t.RatecodeID,\n    t.store_and_fwd_flag,\n    pu.borough AS Pickup_Borough,\n    pu.zone AS Pickup_Zone,\n    do.borough AS Dropoff_Borough,\n    do.zone AS Dropoff_Zone,\n    t.payment_type,\n    t.fare_amount,\n    t.extra,\n    t.mta_tax,\n    t.tip_amount,\n    t.tolls_amount,\n    t.improvement_surcharge,\n    t.total_amount,\n    t.congestion_surcharge,\n    t.service\nFROM\n    dbo.combinedtaxitrip AS t\nLEFT JOIN dbo.zones AS pu\n    ON t.PULocationID = pu.locationid\nLEFT JOIN dbo.zones AS do\n    ON t.DOLocationID = do.locationid;"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
