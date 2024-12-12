@@ -2,7 +2,7 @@
 	"name": "pipeline_run_Scheduler",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [
 			{
 				"pipelineReference": {
@@ -18,7 +18,15 @@
 				"interval": 1,
 				"startTime": "2024-12-11T00:00:00",
 				"endTime": "2024-12-21T11:24:00",
-				"timeZone": "E. Africa Standard Time"
+				"timeZone": "E. Africa Standard Time",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						0
+					]
+				}
 			}
 		}
 	}
