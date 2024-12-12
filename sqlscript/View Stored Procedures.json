@@ -1,0 +1,17 @@
+{
+	"name": "View Stored Procedures",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (10) [name]\n,[object_id]\n,[principal_id]\n,[schema_id]\n,[parent_object_id]\n,[type]\n,[is_auto_executed]\n,[is_execution_replicated]\n,[is_repl_serializable_only]\n,[skips_repl_constraints]\n,[type_desc]\n,[create_date]\n,[modify_date]\n,[is_ms_shipped]\n,[is_published]\n,[is_schema_published]\n FROM [sys].[procedures]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "NewYorkTaxiDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
