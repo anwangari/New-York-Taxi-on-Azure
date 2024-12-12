@@ -21,6 +21,35 @@
 					"referenceName": "AzureDatabricks1",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Script1",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "nytaxi-synapse-workspace-WorkspaceDefaultSqlServer",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "master"
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "-- Check if the external file format exists and create it if not\r\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')\r\n    CREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]\r\n    WITH (FORMAT_TYPE = PARQUET);\r\nGO\r\n\r\n-- Check if the external data source exists and create it if not\r\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'new-york-taxi_nytaxidatastore2_dfs_core_windows_net')\r\n    CREATE EXTERNAL DATA SOURCE [new-york-taxi_nytaxidatastore2_dfs_core_windows_net]\r\n    WITH (\r\n        LOCATION = 'abfss://new-york-taxi@nytaxidatastore2.dfs.core.windows.net'\r\n    );\r\nGO\r\n\r\n-- Create the CETAS (CREATE EXTERNAL TABLE AS SELECT) statement\r\nCREATE EXTERNAL TABLE dbo.combinedtaxitrip\r\nWITH (\r\n    LOCATION = 'combined_trips_data',\r\n    DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\r\n    FILE_FORMAT = SynapseParquetFormat\r\n)\r\nAS\r\nSELECT \r\n    VendorID,\r\n    pickup_datetime,\r\n    dropoff_datetime,\r\n    passenger_count,\r\n    trip_distance,\r\n    RatecodeID,\r\n    store_and_fwd_flag,\r\n    PULocationID,\r\n    DOLocationID,\r\n    payment_type,\r\n    fare_amount,\r\n    extra,\r\n    mta_tax,\r\n    tip_amount,\r\n    tolls_amount,\r\n    improvement_surcharge,\r\n    total_amount,\r\n    congestion_surcharge,\r\n    service\r\nFROM (\r\n    SELECT \r\n        VendorID,\r\n        lpep_pickup_datetime AS pickup_datetime,\r\n        lpep_dropoff_datetime AS dropoff_datetime,\r\n        passenger_count,\r\n        trip_distance,\r\n        RatecodeID,\r\n        store_and_fwd_flag,\r\n        PULocationID,\r\n        DOLocationID,\r\n        payment_type,\r\n        fare_amount,\r\n        extra,\r\n        mta_tax,\r\n        tip_amount,\r\n        tolls_amount,\r\n        improvement_surcharge,\r\n        total_amount,\r\n        congestion_surcharge,\r\n        'green' AS service\r\n    FROM\r\n    OPENROWSET(\r\n        BULK 'https://nytaxidatastore2.dfs.core.windows.net/new-york-taxi/rides/green/*',\r\n        FORMAT = 'PARQUET'\r\n    ) AS [green_result]\r\n    UNION ALL\r\n    SELECT \r\n        VendorID,\r\n        tpep_pickup_datetime AS pickup_datetime,\r\n        tpep_dropoff_datetime AS dropoff_datetime,\r\n        passenger_count,\r\n        trip_distance,\r\n        RatecodeID,\r\n        store_and_fwd_flag,\r\n        PULocationID,\r\n        DOLocationID,\r\n        payment_type,\r\n        fare_amount,\r\n        extra,\r\n        mta_tax,\r\n        tip_amount,\r\n        tolls_amount,\r\n        improvement_surcharge,\r\n        total_amount,\r\n        congestion_surcharge,\r\n        'yellow' AS service\r\n    FROM\r\n    OPENROWSET(\r\n        BULK 'https://nytaxidatastore2.dfs.core.windows.net/new-york-taxi/rides/yellow/*',\r\n        FORMAT = 'PARQUET'\r\n    ) AS [yellow_result]\r\n) combined_taxi_data;\r\nGO\r\n"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
 			}
 		],
 		"annotations": []
