@@ -23,7 +23,7 @@
 				}
 			},
 			{
-				"name": "Script1",
+				"name": "merge-green-and-yellow",
 				"type": "Script",
 				"dependsOn": [
 					{
