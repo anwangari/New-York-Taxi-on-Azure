@@ -1,0 +1,18 @@
+{
+	"name": "Add user",
+	"properties": {
+		"description": "Add user to NewYorkTaxiDB, for pipeline authentification",
+		"content": {
+			"query": "USE NewYorkTaxiDB;\n\n-- Basic user creation\nCREATE LOGIN tony WITH PASSWORD = 'Password1';\n\n-- Create user in the specific database\nCREATE USER tony FOR LOGIN tony;\n\n-- Grant permission\nALTER ROLE db_owner ADD MEMBER tony;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "NewYorkTaxiDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
