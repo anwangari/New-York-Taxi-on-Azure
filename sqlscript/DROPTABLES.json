@@ -2,13 +2,13 @@
 	"name": "DROPTABLES",
 	"properties": {
 		"content": {
-			"query": "USE NewYorkTaxiDB;\n\nDROP EXTERNAL TABLE dbo.zones;",
+			"query": "\nDROP EXTERNAL TABLE dbo.yellow_taxi_data;",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "NewYorkTaxiDB",
-				"poolName": "Built-in"
+				"databaseName": "NewYorkTaxiDB2",
+				"poolName": "NewYorkTaxiDB2"
 			},
 			"resultLimit": 5000
 		},
