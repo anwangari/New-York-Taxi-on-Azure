@@ -3,26 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "url-to-ADLS Gen2",
-				"type": "DatabricksNotebook",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/antonnm7@gmail.com/data-download"
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricks1",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
 				"name": "merge-green-and-yellow",
 				"type": "Script",
 				"dependsOn": [],
@@ -211,7 +191,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "IF NOT EXISTS (SELECT 1 \r\n               FROM sys.external_tables \r\n               WHERE name = 'yellow_taxi_data')\r\nBEGIN\r\n    CREATE EXTERNAL TABLE dbo.yellow_taxi_data (\r\n        VendorID INT,\r\n        tpep_pickup_datetime DATETIME,\r\n        tpep_dropoff_datetime DATETIME,\r\n        passenger_count INT,\r\n        trip_distance FLOAT,\r\n        RatecodeID INT,\r\n        store_and_fwd_flag CHAR(1),\r\n        PULocationID INT,\r\n        DOLocationID INT,\r\n        payment_type INT,\r\n        fare_amount FLOAT,\r\n        extra FLOAT,\r\n        mta_tax FLOAT,\r\n        tip_amount FLOAT,\r\n        tolls_amount FLOAT,\r\n        improvement_surcharge FLOAT,\r\n        total_amount FLOAT,\r\n        congestion_surcharge FLOAT\r\n    )\r\n    WITH (\r\n        LOCATION = 'rides/yellow',\r\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\r\n        FILE_FORMAT = SynapseParquetFormat\r\n    );\r\nEND;"
+							"text": "CREATE EXTERNAL TABLE dbo.yellow_taxi_data (\n    VendorID INT,\n    tpep_pickup_datetime DATETIME,\n    tpep_dropoff_datetime DATETIME,\n    passenger_count INT,\n    trip_distance FLOAT,\n    RatecodeID INT,\n    store_and_fwd_flag CHAR(1),\n    PULocationID INT,\n    DOLocationID INT,\n    payment_type INT,\n    fare_amount FLOAT,\n    extra FLOAT,\n    mta_tax FLOAT,\n    tip_amount FLOAT,\n    tolls_amount FLOAT,\n    improvement_surcharge FLOAT,\n    total_amount FLOAT,\n    congestion_surcharge FLOAT\n)\nWITH (\n    LOCATION = 'rides/yellow',\n    DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n    FILE_FORMAT = SynapseParquetFormat\n)"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
