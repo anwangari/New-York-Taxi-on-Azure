@@ -2,7 +2,7 @@
 	"name": "DROPTABLES",
 	"properties": {
 		"content": {
-			"query": "\nDROP TABLE dbo.green_trips_staged;",
+			"query": "\nDROP external TABLE dbo.green_taxi_data_staged;",
 			"metadata": {
 				"language": "sql"
 			},
