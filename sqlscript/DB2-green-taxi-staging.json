@@ -1,5 +1,5 @@
 {
-	"name": "DB2-yello-taxi-staging",
+	"name": "DB2-green-taxi-staging",
 	"properties": {
 		"content": {
 			"query": "IF NOT EXISTS (SELECT * FROM sys.external_tables WHERE name = 'green_taxi_data_staging' AND schema_id = SCHEMA_ID('dbo'))\n    CREATE EXTERNAL TABLE dbo.green_taxi_data_staging (\n    [VendorID] VARCHAR(50),\n    [lpep_pickup_datetime] VARCHAR(50),\n    [lpep_dropoff_datetime] VARCHAR(50),\n    [store_and_fwd_flag] VARCHAR(50),\n    [RatecodeID] VARCHAR(50),\n    [PULocationID] VARCHAR(50),\n    [DOLocationID] VARCHAR(50),\n    [passenger_count] VARCHAR(50),\n    [trip_distance] VARCHAR(50),\n    [fare_amount] VARCHAR(50),\n    [extra] VARCHAR(50),\n    [mta_tax] VARCHAR(50),\n    [tip_amount] VARCHAR(50),\n    [tolls_amount] VARCHAR(50),\n    [ehail_fee] VARCHAR(50),\n    [improvement_surcharge] VARCHAR(50),\n    [total_amount] VARCHAR(50),\n    [payment_type] VARCHAR(50),\n    [trip_type] VARCHAR(50),\n    [congestion_surcharge] VARCHAR(50)\n    )\n    WITH (\n        LOCATION = 'rides/green',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = SynapseParquetFormat\n    )",
