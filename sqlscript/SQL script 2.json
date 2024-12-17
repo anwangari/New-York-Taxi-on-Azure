@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 2",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [VendorID]\n,[lpep_pickup_datetime]\n,[lpep_dropoff_datetime]\n,[passenger_count]\n,[trip_distance]\n,[RatecodeID]\n,[store_and_fwd_flag]\n,[PULocationID]\n,[DOLocationID]\n,[payment_type]\n,[fare_amount]\n,[extra]\n,[mta_tax]\n,[tip_amount]\n,[tolls_amount]\n,[improvement_surcharge]\n,[total_amount]\n,[congestion_surcharge]\n FROM [dbo].[green_taxi_data_staged]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "NewYorkTaxiDB2",
+				"poolName": "NewYorkTaxiDB2"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
