@@ -2,7 +2,7 @@
 	"name": "DB2-zone-lookup staging",
 	"properties": {
 		"content": {
-			"query": "IF NOT EXISTS (SELECT * FROM sys.external_tables WHERE name = 'zones' AND schema_id = SCHEMA_ID('dbo'))\n    CREATE EXTERNAL TABLE dbo.zones_stagging (\n        [locationid] bigint,\n        [borough] nvarchar(4000),\n        [zone] nvarchar(4000),\n        [service_zone] nvarchar(4000)\n    )\n    WITH (\n        LOCATION = 'rides/zone_lookups/taxi_zone_lookup.parquet',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = [SynapseParquetFormat]\n    )\n",
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_tables WHERE name = 'zones_staging' AND schema_id = SCHEMA_ID('dbo'))\n    CREATE EXTERNAL TABLE dbo.zones_staging (\n        [locationid] bigint,\n        [borough] nvarchar(4000),\n        [zone] nvarchar(4000),\n        [service_zone] nvarchar(4000)\n    )\n    WITH (\n        LOCATION = 'rides/zone_lookups/taxi_zone_lookup.parquet',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = [SynapseParquetFormat]\n    )\n",
 			"metadata": {
 				"language": "sql"
 			},
