@@ -1,5 +1,5 @@
 {
-	"name": "nytaxi-web-to-lakehouse",
+	"name": "nytaxi-ADLS Gen2-to-lakehouse",
 	"properties": {
 		"activities": [
 			{
