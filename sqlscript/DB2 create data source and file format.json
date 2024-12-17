@@ -1,5 +1,5 @@
 {
-	"name": "create data source and file format",
+	"name": "DB2 create data source and file format",
 	"properties": {
 		"content": {
 			"query": "-- Check if the external file format exists and create it if not\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')\n    CREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]\n    WITH (FORMAT_TYPE = PARQUET);\nGO\n\n-- Check if the external data source exists and create it if not\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'new-york-taxi_nytaxidatastore2_dfs_core_windows_net')\n    CREATE EXTERNAL DATA SOURCE [new-york-taxi_nytaxidatastore2_dfs_core_windows_net]\n    WITH (\n        LOCATION = 'abfss://new-york-taxi@nytaxidatastore2.dfs.core.windows.net'\n    );\nGO",
