@@ -22,7 +22,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "-- Check if the external file format exists and create it if not\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')\n    CREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]\n    WITH (FORMAT_TYPE = PARQUET);\nGO\n\n-- Check if the external data source exists and create it if not\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'new-york-taxi_nytaxidatastore2_dfs_core_windows_net')\n    CREATE EXTERNAL DATA SOURCE [new-york-taxi_nytaxidatastore2_dfs_core_windows_net]\n    WITH (\n        LOCATION = 'abfss://new-york-taxi@nytaxidatastore2.dfs.core.windows.net'\n    );\nGO"
+							"text": "-- Check if the external file format exists and create it if not\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat')\n    CREATE EXTERNAL FILE FORMAT [SynapseParquetFormat]\n    WITH (FORMAT_TYPE = PARQUET);\n\n-- Check if the external data source exists and create it if not\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'new-york-taxi_nytaxidatastore2_dfs_core_windows_net')\n    CREATE EXTERNAL DATA SOURCE [new-york-taxi_nytaxidatastore2_dfs_core_windows_net]\n    WITH (\n        LOCATION = 'abfss://new-york-taxi@nytaxidatastore2.dfs.core.windows.net'\n    )"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
@@ -56,7 +56,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "IF NOT EXISTS (SELECT 1 \n               FROM sys.external_tables \n               WHERE name = 'green_taxi_data')\nBEGIN\n    CREATE EXTERNAL TABLE dbo.green_taxi_data (\n        VendorID INT,\n        lpep_pickup_datetime DATETIME,\n        lpep_dropoff_datetime DATETIME,\n        passenger_count INT,\n        trip_distance FLOAT,\n        RatecodeID INT,\n        store_and_fwd_flag CHAR(1),\n        PULocationID INT,\n        DOLocationID INT,\n        payment_type INT,\n        fare_amount FLOAT,\n        extra FLOAT,\n        mta_tax FLOAT,\n        tip_amount FLOAT,\n        tolls_amount FLOAT,\n        improvement_surcharge FLOAT,\n        total_amount FLOAT,\n        congestion_surcharge FLOAT\n    )\n    WITH (\n        LOCATION = 'rides/green',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = SynapseParquetFormat\n    );\nEND;"
+							"text": "IF NOT EXISTS (SELECT 1 \n               FROM sys.external_tables \n               WHERE name = 'green_taxi_data_staged')\nBEGIN\n    CREATE EXTERNAL TABLE dbo.green_taxi_data_staged (\n        VendorID INT,\n        lpep_pickup_datetime DATETIME,\n        lpep_dropoff_datetime DATETIME,\n        passenger_count INT,\n        trip_distance FLOAT,\n        RatecodeID INT,\n        store_and_fwd_flag CHAR(1),\n        PULocationID INT,\n        DOLocationID INT,\n        payment_type INT,\n        fare_amount FLOAT,\n        extra FLOAT,\n        mta_tax FLOAT,\n        tip_amount FLOAT,\n        tolls_amount FLOAT,\n        improvement_surcharge FLOAT,\n        total_amount FLOAT,\n        congestion_surcharge FLOAT\n    )\n    WITH (\n        LOCATION = 'rides/green',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = SynapseParquetFormat\n    );\nEND;"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
@@ -90,7 +90,40 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "CREATE EXTERNAL TABLE dbo.yellow_taxi_data (\n    VendorID INT,\n    tpep_pickup_datetime DATETIME,\n    tpep_dropoff_datetime DATETIME,\n    passenger_count INT,\n    trip_distance FLOAT,\n    RatecodeID INT,\n    store_and_fwd_flag CHAR(1),\n    PULocationID INT,\n    DOLocationID INT,\n    payment_type INT,\n    fare_amount FLOAT,\n    extra FLOAT,\n    mta_tax FLOAT,\n    tip_amount FLOAT,\n    tolls_amount FLOAT,\n    improvement_surcharge FLOAT,\n    total_amount FLOAT,\n    congestion_surcharge FLOAT\n)\nWITH (\n    LOCATION = 'rides/yellow',\n    DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n    FILE_FORMAT = SynapseParquetFormat\n)"
+							"text": "IF NOT EXISTS (SELECT * FROM sys.external_tables WHERE name = 'yellow_taxi_data_staged' AND schema_id = SCHEMA_ID('dbo'))\n    CREATE EXTERNAL TABLE dbo.yellow_taxi_data_staged (\n        VendorID INT,\n        tpep_pickup_datetime DATETIME,\n        tpep_dropoff_datetime DATETIME,\n        passenger_count INT,\n        trip_distance FLOAT,\n        RatecodeID INT,\n        store_and_fwd_flag CHAR(1),\n        PULocationID INT,\n        DOLocationID INT,\n        payment_type INT,\n        fare_amount FLOAT,\n        extra FLOAT,\n        mta_tax FLOAT,\n        tip_amount FLOAT,\n        tolls_amount FLOAT,\n        improvement_surcharge FLOAT,\n        total_amount FLOAT,\n        congestion_surcharge FLOAT\n    )\n    WITH (\n        LOCATION = 'rides/yellow',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = SynapseParquetFormat\n    )"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Taxi Zones staging",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "create data source and file format",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "SynapseDedicatedSQLPoolLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "IF NOT EXISTS (SELECT * FROM sys.external_tables WHERE name = 'zones_staging' AND schema_id = SCHEMA_ID('dbo'))\r\n    CREATE EXTERNAL TABLE dbo.zones_staging (\r\n        [locationid] bigint,\r\n        [borough] nvarchar(4000),\r\n        [zone] nvarchar(4000),\r\n        [service_zone] nvarchar(4000)\r\n    )\r\n    WITH (\r\n        LOCATION = 'rides/zone_lookups/taxi_zone_lookup.parquet',\r\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\r\n        FILE_FORMAT = [SynapseParquetFormat]\r\n    )\r\n"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
