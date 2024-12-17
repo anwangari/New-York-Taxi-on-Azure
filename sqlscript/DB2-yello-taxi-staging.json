@@ -1,0 +1,17 @@
+{
+	"name": "DB2-yello-taxi-staging",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_tables WHERE name = 'yellow_taxi_data_staging' AND schema_id = SCHEMA_ID('dbo'))\n    CREATE EXTERNAL TABLE dbo.yellow_taxi_data_staging (\n        VendorID INT,\n        tpep_pickup_datetime DATETIME,\n        tpep_dropoff_datetime DATETIME,\n        passenger_count INT,\n        trip_distance FLOAT,\n        RatecodeID INT,\n        store_and_fwd_flag CHAR(1),\n        PULocationID INT,\n        DOLocationID INT,\n        payment_type INT,\n        fare_amount FLOAT,\n        extra FLOAT,\n        mta_tax FLOAT,\n        tip_amount FLOAT,\n        tolls_amount FLOAT,\n        improvement_surcharge FLOAT,\n        total_amount FLOAT,\n        congestion_surcharge FLOAT\n    )\n    WITH (\n        LOCATION = 'rides/yellow',\n        DATA_SOURCE = [new-york-taxi_nytaxidatastore2_dfs_core_windows_net],\n        FILE_FORMAT = SynapseParquetFormat\n    )",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
