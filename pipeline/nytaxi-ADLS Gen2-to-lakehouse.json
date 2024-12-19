@@ -128,6 +128,72 @@
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
 				}
+			},
+			{
+				"name": "Cleaning green trips",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Green Trips staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "SynapseDedicatedSQLPoolLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'green_taxi_data_CLEAN' AND schema_id = SCHEMA_ID('dbo'))\r\nCREATE TABLE dbo.green_taxi_data_CLEAN\r\nWITH\r\n(\r\n    DISTRIBUTION = ROUND_ROBIN,\r\n    CLUSTERED COLUMNSTORE INDEX\r\n)\r\nAS\r\nSELECT \r\n    CAST(CASE WHEN [VendorID] = 'NaN' THEN NULL ELSE [VendorID] END AS BIGINT) AS VendorID,\r\n    CAST([lpep_pickup_datetime] AS DATETIME2) AS lpep_pickup_datetime,\r\n    CAST([lpep_dropoff_datetime] AS DATETIME2) AS lpep_dropoff_datetime,\r\n    CAST([store_and_fwd_flag] AS VARCHAR(1)) AS store_and_fwd_flag,\r\n    CAST(CASE WHEN [RatecodeID] = 'NaN' THEN NULL ELSE [RatecodeID] END AS FLOAT) AS RatecodeID,\r\n    CAST(CASE WHEN [PULocationID] = 'NaN' THEN NULL ELSE [PULocationID] END AS BIGINT) AS PULocationID,\r\n    CAST(CASE WHEN [DOLocationID] = 'NaN' THEN NULL ELSE [DOLocationID] END AS BIGINT) AS DOLocationID,\r\n    CAST(CASE WHEN [passenger_count] = 'NaN' THEN NULL ELSE [passenger_count] END AS FLOAT) AS passenger_count,\r\n    CAST(CASE WHEN [trip_distance] = 'NaN' THEN NULL ELSE [trip_distance] END AS FLOAT) AS trip_distance,\r\n    CAST(CASE WHEN [fare_amount] = 'NaN' THEN NULL ELSE [fare_amount] END AS FLOAT) AS fare_amount,\r\n    CAST(CASE WHEN [extra] = 'NaN' THEN NULL ELSE [extra] END AS FLOAT) AS extra,\r\n    CAST(CASE WHEN [mta_tax] = 'NaN' THEN NULL ELSE [mta_tax] END AS FLOAT) AS mta_tax,\r\n    CAST(CASE WHEN [tip_amount] = 'NaN' THEN NULL ELSE [tip_amount] END AS FLOAT) AS tip_amount,\r\n    CAST(CASE WHEN [tolls_amount] = 'NaN' THEN NULL ELSE [tolls_amount] END AS FLOAT) AS tolls_amount,\r\n    CAST(CASE WHEN [ehail_fee] = 'NaN' THEN NULL ELSE [ehail_fee] END AS FLOAT) AS ehail_fee,\r\n    CAST(CASE WHEN [improvement_surcharge] = 'NaN' THEN NULL ELSE [improvement_surcharge] END AS FLOAT) AS improvement_surcharge,\r\n    CAST(CASE WHEN [total_amount] = 'NaN' THEN NULL ELSE [total_amount] END AS FLOAT) AS total_amount,\r\n    CAST(CASE WHEN [payment_type] = 'NaN' THEN NULL ELSE [payment_type] END AS FLOAT) AS payment_type,\r\n    CAST(CASE WHEN [trip_type] = 'NaN' THEN NULL ELSE [trip_type] END AS FLOAT) AS trip_type,\r\n    CAST(CASE WHEN [congestion_surcharge] = 'NaN' THEN NULL ELSE [congestion_surcharge] END AS FLOAT) AS congestion_surcharge\r\nFROM dbo.green_taxi_data_staged;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Merge Green and Yellow trips data",
+				"type": "SqlPoolStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Cleaning green trips",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Yellow Trips staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"sqlPool": {
+					"referenceName": "NewYorkTaxiDB2",
+					"type": "SqlPoolReference"
+				},
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[combine_green_and_yellow]"
+				}
 			}
 		],
 		"annotations": []
