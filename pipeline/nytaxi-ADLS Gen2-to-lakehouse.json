@@ -194,6 +194,46 @@
 				"typeProperties": {
 					"storedProcedureName": "[dbo].[combine_green_and_yellow]"
 				}
+			},
+			{
+				"name": "Create a fact table",
+				"description": "Complete clean table (data warehouse) with all the data included",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Merge Green and Yellow trips data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Taxi Zones staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "SynapseDedicatedSQLPoolLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'fact_trips_complete' AND schema_id = SCHEMA_ID('dbo'))\r\nCREATE TABLE dbo.fact_trips_complete\r\nWITH\r\n(\r\n    DISTRIBUTION = ROUND_ROBIN,\r\n    CLUSTERED COLUMNSTORE INDEX\r\n)\r\nAS\r\nSELECT\r\n    t.VendorID,\r\n    t.pickup_datetime,\r\n    t.passenger_count,\r\n    t.trip_distance,\r\n    t.RatecodeID,\r\n    t.store_and_fwd_flag,\r\n    pu.borough AS Pickup_Borough,\r\n    pu.zone AS Pickup_Zone,\r\n    do.borough AS Dropoff_Borough,\r\n    do.zone AS Dropoff_Zone,\r\n    t.payment_type,\r\n    t.fare_amount,\r\n    t.extra,\r\n    t.mta_tax,\r\n    t.tip_amount,\r\n    t.tolls_amount,\r\n    t.improvement_surcharge,\r\n    t.total_amount,\r\n    t.congestion_surcharge,\r\n    t.service\r\nFROM\r\n    dbo.combined_taxi_trips_staged AS t\r\nLEFT JOIN dbo.zones_staging AS pu\r\n    ON t.PULocationID = pu.locationid\r\nLEFT JOIN dbo.zones_staging AS do\r\n    ON t.DOLocationID = do.locationid;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
 			}
 		],
 		"annotations": []
